@@ -1,0 +1,17 @@
+{
+  "name": "create-next-example-app",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "css-loader": "^0.28.1",
+    "next": "^2.3.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-instantsearch": "^3.3.2",
+    "react-instantsearch-theme-algolia": "^4.0.0-beta.6",
+    "style-loader": "^0.17.0"
+  }
+}
