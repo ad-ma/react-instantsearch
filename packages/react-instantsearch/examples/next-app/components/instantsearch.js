@@ -1,5 +1,10 @@
 import React from 'react';
-import { InstantSearch, SearchBox, Hits } from 'react-instantsearch/dom';
+import {
+  InstantSearch,
+  RefinementList,
+  SearchBox,
+  Hits,
+} from 'react-instantsearch/dom';
 
 export default class extends React.Component {
   render() {
@@ -12,6 +17,7 @@ export default class extends React.Component {
       >
         <SearchBox />
         <Hits />
+        <RefinementList attributeName="category" />
       </InstantSearch>
     );
   }

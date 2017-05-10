@@ -59,6 +59,7 @@ class InstantSearch extends Component {
       searchParameters: props.searchParameters,
       algoliaClient: props.algoliaClient,
       initialState,
+      results: props.results,
     });
   }
 
@@ -68,9 +69,9 @@ class InstantSearch extends Component {
     if (this.props.indexName !== nextProps.indexName) {
       this.aisManager.updateIndex(nextProps.indexName);
     }
-    
+
     if (this.props.algoliaClient !== nextProps.algoliaClient) {
-      this.aisManager.updateClient(nextProps.algoliaClient)
+      this.aisManager.updateClient(nextProps.algoliaClient);
     }
 
     if (this.isControlled) {
