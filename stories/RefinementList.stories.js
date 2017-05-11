@@ -4,10 +4,40 @@ import {
   RefinementList,
   Panel,
   SearchBox,
+  withSSR,
+  InstantSearch,
+  Hits,
 } from '../packages/react-instantsearch/dom';
 import { withKnobs, boolean, number, array } from '@storybook/addon-knobs';
 import { WrapWithHits } from './util';
 import { orderBy } from 'lodash';
+import algoliasearchHelper, {
+  SearchParameters,
+} from '../packages/react-instantsearch/node_modules/algoliasearch-helper';
+import algoliasearch
+  from '../packages/react-instantsearch/node_modules/algoliasearch/lite';
+
+const algoliaClient = algoliasearch(
+  'latency',
+  '6be0576ff61c053d5f9a3225e2a90f76'
+);
+const helper = algoliasearchHelper(algoliaClient, 'ikea');
+const searchParameters = new SearchParameters({
+  index: 'ikea',
+});
+
+withSSR(
+  <InstantSearch
+    appId="latency"
+    apiKey="6be0576ff61c053d5f9a3225e2a90f76"
+    indexName="ikea"
+  >
+    <RefinementList attributeName="category" />
+    <Hits />
+  </InstantSearch>
+).then(res => {
+  console.log('my res', res);
+});
 
 const stories = storiesOf('RefinementList', module);
 

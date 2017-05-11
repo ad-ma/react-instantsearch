@@ -58,6 +58,7 @@ export default function createInstantSearch(defaultAlgoliaClient, root) {
           root={root}
           algoliaClient={this.client}
           children={this.props.children}
+          resultsState={this.props.resultsState}
         />
       );
     }

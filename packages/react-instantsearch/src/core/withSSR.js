@@ -8,9 +8,10 @@ let results = null;
 
 function iterate(children, searchParameters, context) {
   sp = searchParameters;
-  console.log('children', children);
   if (children.length > 0 && children.forEach) {
     children.forEach(child => {
+      console.log('child', child);
+
       if (child.type.getSearchParameters) {
         const getSearchParameters = child.type.getSearchParameters.bind(
           context
@@ -22,6 +23,8 @@ function iterate(children, searchParameters, context) {
       }
     });
   } else if (isObject(children)) {
+    console.log('children', children);
+
     if (children.type.getSearchParameters) {
       const getSearchParameters = children.type.getSearchParameters.bind(
         context
@@ -35,7 +38,6 @@ function iterate(children, searchParameters, context) {
 }
 
 const withSSR = function(component) {
-  console.log(component);
   const { indexName, children, appId, apiKey } = component.props;
   const algoliaClient = component.props.algoliaClient
     ? component.props.algoliaClient
@@ -53,11 +55,8 @@ const withSSR = function(component) {
     },
   };
   iterate(children, searchParameters, context);
-  console.log('iteration is', sp);
-  console.log('client', indexName);
 
   //const toto = search(props, sp);
-  // console.log('results', toto);
   const helper = algoliasearchHelper(algoliaClient, indexName);
   return helper.searchOnce(sp);
 };

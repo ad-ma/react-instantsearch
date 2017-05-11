@@ -49,7 +49,6 @@ function validateNextProps(props, nextProps) {
 class InstantSearch extends Component {
   constructor(props) {
     super(props);
-
     this.isControlled = Boolean(props.searchState);
     const initialState = this.isControlled ? props.searchState : {};
     this.isUnmounting = false;
@@ -59,7 +58,7 @@ class InstantSearch extends Component {
       searchParameters: props.searchParameters,
       algoliaClient: props.algoliaClient,
       initialState,
-      results: props.results,
+      resultsState: props.resultsState,
     });
   }
 
