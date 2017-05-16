@@ -26,28 +26,57 @@ const searchParameters = new SearchParameters({
   index: 'ikea',
 });
 
-withSSR(
-  <InstantSearch
-    appId="latency"
-    apiKey="6be0576ff61c053d5f9a3225e2a90f76"
-    indexName="ikea"
-  >
-    <RefinementList attributeName="category" />
-    <Hits />
-  </InstantSearch>
-).then(res => {
+class IS extends React.Component {
+  render() {
+    return (
+      <InstantSearch
+        appId="latency"
+        apiKey="6be0576ff61c053d5f9a3225e2a90f76"
+        indexName="ikea"
+      >
+        <RefinementList attributeName="category" />
+        <Hits />
+      </InstantSearch>
+    );
+  }
+}
+
+class Toto extends React.Component {
+  iterate(children) {
+    const { type, props } = children;
+    console.log(React.createElement(type, props));
+
+    React.Children.forEach(children, (child, i) => {
+      // Ignore the first child
+      if (child.props.children) {
+        //this.iterate(child);
+      }
+    });
+  }
+  render() {
+    const children = this.props.children;
+    this.iterate(children);
+    return (
+      <div>
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+/*withSSR(<Toto></Toto>).then(res => {
   console.log('my res', res);
 });
-
+*/
 const stories = storiesOf('RefinementList', module);
 
 stories.addDecorator(withKnobs);
 
 stories
   .add('default', () => (
-    <WrapWithHits linkedStoryGroup="RefinementList" hasPlayground={true}>
-      <RefinementList attributeName="category" />
-    </WrapWithHits>
+    <Toto>
+      <IS />
+    </Toto>
   ))
   .add('with selected item', () => (
     <WrapWithHits linkedStoryGroup="RefinementList" hasPlayground={true}>

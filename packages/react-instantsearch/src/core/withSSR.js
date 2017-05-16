@@ -2,6 +2,7 @@ import highlightTags from './highlightTags.js';
 import algoliasearchHelper, { SearchParameters } from 'algoliasearch-helper';
 import { isObject } from 'lodash';
 import algoliasearch from 'algoliasearch/lite';
+import React from 'react';
 
 let sp;
 let results = null;
@@ -11,7 +12,6 @@ function iterate(children, searchParameters, context) {
   if (children.length > 0 && children.forEach) {
     children.forEach(child => {
       console.log('child', child);
-
       if (child.type.getSearchParameters) {
         const getSearchParameters = child.type.getSearchParameters.bind(
           context
@@ -37,7 +37,18 @@ function iterate(children, searchParameters, context) {
   }
 }
 
+function find(children) {
+  children = React.createElement(children.type);
+  console.log(children.type());
+
+  if (children.type.props.children) {
+    find(children.type.props.children);
+  }
+}
+
 const withSSR = function(component) {
+  component = React.createElement(component);
+  find(component);
   const { indexName, children, appId, apiKey } = component.props;
   const algoliaClient = component.props.algoliaClient
     ? component.props.algoliaClient

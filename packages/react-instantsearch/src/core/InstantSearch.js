@@ -59,6 +59,7 @@ class InstantSearch extends Component {
       algoliaClient: props.algoliaClient,
       initialState,
       resultsState: props.resultsState,
+      onResultsChange: props.onResultsChange,
     });
   }
 

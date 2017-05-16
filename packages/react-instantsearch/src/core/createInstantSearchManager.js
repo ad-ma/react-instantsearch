@@ -19,6 +19,7 @@ export default function createInstantSearchManager({
   algoliaClient,
   searchParameters = {},
   resultsState,
+  onResultsChange,
 }) {
   const baseSP = new SearchParameters({
     ...searchParameters,
@@ -162,6 +163,9 @@ export default function createInstantSearchManager({
       'resultsFacetValues'
     );
     store.setState(nextState);
+    if (onResultsChange) {
+      onResultsChange(results);
+    }
   }
 
   function handleSearchError(error) {
@@ -174,6 +178,9 @@ export default function createInstantSearchManager({
       'resultsFacetValues'
     );
     store.setState(nextState);
+    if (onResultsChange) {
+      onResultsChange(error);
+    }
   }
 
   // Called whenever a widget has been rendered with new props.
