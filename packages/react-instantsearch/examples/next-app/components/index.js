@@ -1,2 +1,2 @@
 export * from './head';
-export { default as InstantSearch } from './instantsearch';
+export { default as IS } from './instantsearch';

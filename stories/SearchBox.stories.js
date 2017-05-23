@@ -4,21 +4,34 @@ import { SearchBox } from '../packages/react-instantsearch/dom';
 import { withKnobs, object } from '@storybook/addon-knobs';
 import { WrapWithHits } from './util';
 import { action } from '@storybook/addon-actions';
-
+import {
+  InstantSearch,
+  findResults,
+} from '../packages/react-instantsearch/server';
 const stories = storiesOf('SearchBox', module);
 
 stories.addDecorator(withKnobs);
 
+class IS extends React.Component {
+  render() {
+    return (
+      <InstantSearch
+        appId="latency"
+        apiKey="6be0576ff61c053d5f9a3225e2a90f76"
+        indexName="ikea"
+      >
+        <SearchBox defaultRefinement="battery" />
+      </InstantSearch>
+    );
+  }
+}
+
+findResults(IS).then(results => console.log(results));
+
 stories
-  .add('default', () => (
-    <WrapWithHits
-      searchBox={false}
-      hasPlayground={true}
-      linkedStoryGroup="SearchBox"
-    >
-      <SearchBox />
-    </WrapWithHits>
-  ))
+  .add('default', () => {
+    return <div />;
+  })
   .add('with a default query', () => (
     <WrapWithHits
       searchBox={false}

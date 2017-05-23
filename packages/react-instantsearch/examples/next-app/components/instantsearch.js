@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  InstantSearch,
-  RefinementList,
-  SearchBox,
-  Hits,
-} from 'react-instantsearch/dom';
-
+import { RefinementList, SearchBox, Hits } from 'react-instantsearch/dom';
+import { InstantSearch } from 'react-instantsearch/server';
 export default class extends React.Component {
   render() {
     return (
@@ -15,7 +10,7 @@ export default class extends React.Component {
         indexName="ikea"
         resultsState={this.props.resultsState}
       >
-        <SearchBox />
+        <SearchBox defaultRefinement="chair" />
         <Hits />
         <RefinementList attributeName="category" />
       </InstantSearch>

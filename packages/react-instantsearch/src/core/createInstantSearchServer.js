@@ -2,6 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InstantSearch from './InstantSearch';
 import { version } from '../../package.json';
+import algoliasearchHelper, {
+  SearchResults,
+  SearchParameters,
+} from 'algoliasearch-helper';
+import ReactDom from 'react-dom/server';
 
 /**
  * Creates a specialized root InstantSearch component. It accepts
@@ -10,7 +15,40 @@ import { version } from '../../package.json';
  * @param {object} root - the defininition of the root of an InstantSearch sub tree.
  * @returns {object} an InstantSearch root
  */
-export default function createInstantSearch(defaultAlgoliaClient, root) {
+
+let searchParameters;
+let client2;
+let indexName = '';
+
+const onSearchParameters = function(getSearchParameters, context, props) {
+  searchParameters = searchParameters
+    ? searchParameters
+    : new SearchParameters({
+        index: indexName,
+      });
+
+  searchParameters = getSearchParameters.call(
+    { context },
+    searchParameters,
+    props,
+    {}
+  );
+};
+
+const findResults = function(App) {
+  ReactDom.renderToString(<App />);
+  const helper = algoliasearchHelper(client2, searchParameters.index);
+  return helper.searchOnce(searchParameters);
+};
+
+const decorateResults = function(results) {
+  return new SearchResults(
+    new SearchParameters(results.state),
+    results._originalResponse.results
+  );
+};
+
+const createInstantSearch = function(defaultAlgoliaClient, root) {
   return class CreateInstantSearch extends Component {
     static propTypes = {
       algoliaClient: PropTypes.object,
@@ -32,6 +70,8 @@ export default function createInstantSearch(defaultAlgoliaClient, root) {
       this.client =
         props.algoliaClient || defaultAlgoliaClient(props.appId, props.apiKey);
       this.client.addAlgoliaAgent(`react-instantsearch ${version}`);
+      client2 = this.client;
+      indexName = props.indexName;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -45,6 +85,8 @@ export default function createInstantSearch(defaultAlgoliaClient, root) {
         this.client = defaultAlgoliaClient(nextProps.appId, nextProps.apiKey);
       }
       this.client.addAlgoliaAgent(`react-instantsearch ${version}`);
+      client2 = this.client;
+      indexName = nextProps.indexName;
     }
 
     render() {
@@ -55,7 +97,7 @@ export default function createInstantSearch(defaultAlgoliaClient, root) {
           searchParameters={this.props.searchParameters}
           searchState={this.props.searchState}
           onSearchStateChange={this.props.onSearchStateChange}
-          onSearchParameters={this.props.onSearchParameters}
+          onSearchParameters={onSearchParameters}
           root={root}
           algoliaClient={this.client}
           children={this.props.children}
@@ -64,4 +106,6 @@ export default function createInstantSearch(defaultAlgoliaClient, root) {
       );
     }
   };
-}
+};
+
+export { createInstantSearch, findResults, decorateResults };

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { has, isEqual } from 'lodash';
+import { SearchParameters } from 'algoliasearch-helper';
 
 import { shallowEqual, getDisplayName, removeEmptyKey } from './utils';
 
@@ -100,6 +101,19 @@ export default function createConnector(connectorDesc) {
           transitionState,
           multiIndexContext,
         });
+      }
+    }
+
+    componentWillMount() {
+      const searchParameters = new SearchParameters({
+        index: 'ikea',
+      });
+      if (connectorDesc.getSearchParameters) {
+        this.context.ais.onSearchParameters(
+          connectorDesc.getSearchParameters,
+          this.context,
+          this.props
+        );
       }
     }
 

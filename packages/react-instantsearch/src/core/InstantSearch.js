@@ -94,6 +94,7 @@ class InstantSearch extends Component {
           createHrefForState: this.createHrefForState.bind(this),
           onSearchForFacetValues: this.onSearchForFacetValues.bind(this),
           onSearchStateChange: this.onSearchStateChange.bind(this),
+          onSearchParameters: this.onSearchParameters.bind(this),
         },
       };
     }
@@ -128,6 +129,12 @@ class InstantSearch extends Component {
   onSearchStateChange(searchState) {
     if (this.props.onSearchStateChange && !this.isUnmounting) {
       this.props.onSearchStateChange(searchState);
+    }
+  }
+
+  onSearchParameters(getSearchParameters, context, props) {
+    if (this.props.onSearchParameters) {
+      this.props.onSearchParameters(getSearchParameters, context, props);
     }
   }
 

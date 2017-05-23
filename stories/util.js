@@ -64,6 +64,8 @@ const WrapWithHits = ({
       apiKey="6be0576ff61c053d5f9a3225e2a90f76"
       indexName="ikea"
       onResultsChange={results => console.log(results)}
+      onSearchParameters={sp => console.log(sp)}
+      onSearchStateChange={searchState => console.log(searchState)}
     >
       <Configure {...searchParameters} />
       <div>
