@@ -20,7 +20,12 @@ let searchParameters;
 let client2;
 let indexName = '';
 
-const onSearchParameters = function(getSearchParameters, context, props) {
+const onSearchParameters = function(
+  getSearchParameters,
+  context,
+  props,
+  searchState
+) {
   searchParameters = searchParameters
     ? searchParameters
     : new SearchParameters({
@@ -31,12 +36,12 @@ const onSearchParameters = function(getSearchParameters, context, props) {
     { context },
     searchParameters,
     props,
-    {}
+    searchState
   );
 };
 
-const findResults = function(App) {
-  ReactDom.renderToString(<App />);
+const findResults = function(App, params) {
+  ReactDom.renderToString(<App {...params} />);
   const helper = algoliasearchHelper(client2, searchParameters.index);
   return helper.searchOnce(searchParameters);
 };

@@ -9,8 +9,10 @@ export default class extends React.Component {
         apiKey="6be0576ff61c053d5f9a3225e2a90f76"
         indexName="ikea"
         resultsState={this.props.resultsState}
+        onSearchStateChange={this.props.onSearchStateChange}
+        searchState={this.props.searchState}
       >
-        <SearchBox defaultRefinement="chair" />
+        <SearchBox />
         <Hits />
         <RefinementList attributeName="category" />
       </InstantSearch>

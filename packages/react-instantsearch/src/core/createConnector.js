@@ -105,9 +105,6 @@ export default function createConnector(connectorDesc) {
     }
 
     componentWillMount() {
-      const searchParameters = new SearchParameters({
-        index: 'ikea',
-      });
       if (connectorDesc.getSearchParameters) {
         this.context.ais.onSearchParameters(
           connectorDesc.getSearchParameters,
