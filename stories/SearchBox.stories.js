@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
-import { SearchBox } from '../packages/react-instantsearch/dom';
+import {
+  SearchBox,
+  Index,
+  Configure,
+} from '../packages/react-instantsearch/dom';
 import { withKnobs, object } from '@storybook/addon-knobs';
 import { WrapWithHits } from './util';
 import { action } from '@storybook/addon-actions';
 import {
   InstantSearch,
   findResults,
+  decorateResults,
 } from '../packages/react-instantsearch/server';
 const stories = storiesOf('SearchBox', module);
 
@@ -20,13 +25,24 @@ class IS extends React.Component {
         apiKey="6be0576ff61c053d5f9a3225e2a90f76"
         indexName="ikea"
       >
-        <SearchBox defaultRefinement="battery" />
+        <Configure hitsPerPage={3} />
+        <Index indexName="ikea">
+          <SearchBox defaultRefinement="battery" />
+        </Index>
+        <Index indexName="bestbuy">
+          <SearchBox defaultRefinement="desk" />
+        </Index>
+        <Index indexName="airbnb">
+          <SearchBox defaultRefinement="italy" />
+        </Index>
       </InstantSearch>
     );
   }
 }
 
-findResults(IS).then(results => console.log(results));
+findResults(IS).then(results =>
+  console.log('dofkdsfsresults', decorateResults(results))
+);
 
 stories
   .add('default', () => {

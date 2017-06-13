@@ -38,9 +38,8 @@ export default class extends React.Component {
   }
 
   render() {
-    const resultsState = this.props.results
-      ? decorateResults(this.props.results)
-      : null;
+    console.log(this.props);
+    const resultsState = this.props.results ? this.props.results : null;
     return (
       <div>
         <Head title="Home" />

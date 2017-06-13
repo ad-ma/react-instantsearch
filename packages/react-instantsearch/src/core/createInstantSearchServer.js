@@ -7,6 +7,7 @@ import algoliasearchHelper, {
   SearchParameters,
 } from 'algoliasearch-helper';
 import ReactDom from 'react-dom/server';
+import { getIndex, hasMultipleIndex } from './indexUtils';
 
 /**
  * Creates a specialized root InstantSearch component. It accepts
@@ -16,8 +17,8 @@ import ReactDom from 'react-dom/server';
  * @returns {object} an InstantSearch root
  */
 
-let searchParameters;
-let client2;
+const searchParameters = [];
+let client;
 let indexName = '';
 
 const onSearchParameters = function(
@@ -26,31 +27,71 @@ const onSearchParameters = function(
   props,
   searchState
 ) {
-  searchParameters = searchParameters
-    ? searchParameters
-    : new SearchParameters({
-        index: indexName,
-      });
-
-  searchParameters = getSearchParameters.call(
-    { context },
-    searchParameters,
+  const index = getIndex(context);
+  searchParameters.push({
+    getSearchParameters,
+    context,
     props,
-    searchState
-  );
+    searchState,
+    index,
+  });
 };
 
 const findResults = function(App, params) {
   ReactDom.renderToString(<App {...params} />);
-  const helper = algoliasearchHelper(client2, searchParameters.index);
-  return helper.searchOnce(searchParameters);
+  const sharedSearchParameters = searchParameters
+    .filter(searchParameter => !hasMultipleIndex(searchParameter.context))
+    .reduce(
+      (acc, searchParameter) =>
+        searchParameter.getSearchParameters.call(
+          { context: searchParameter.context },
+          acc,
+          searchParameter.props,
+          searchParameter.searchState
+        ),
+      new SearchParameters({ index: indexName })
+    );
+
+  const mergedSearchParameters = searchParameters
+    .filter(searchParameter => hasMultipleIndex(searchParameter.context))
+    .reduce((acc, searchParameter) => {
+      const index = getIndex(searchParameter.context);
+      const sp = searchParameter.getSearchParameters.call(
+        { context: searchParameter.context },
+        acc[index] ? acc[index] : sharedSearchParameters,
+        searchParameter.props,
+        searchParameter.searchState
+      );
+      acc[index] = sp;
+      return acc;
+    }, {});
+
+  const search = Object.keys(mergedSearchParameters).map(key => {
+    const helper = algoliasearchHelper(
+      client,
+      mergedSearchParameters[key].index
+    );
+    return helper.searchOnce(new SearchParameters(mergedSearchParameters[key]));
+  });
+  return Promise.all(search);
 };
 
 const decorateResults = function(results) {
-  return new SearchResults(
-    new SearchParameters(results.state),
-    results._originalResponse.results
-  );
+  if (!results) {
+    return undefined;
+  }
+  return Array.isArray(results)
+    ? results.reduce((acc, result) => {
+        acc[result.state.index] = new SearchResults(
+          new SearchParameters(result.state),
+          result._originalResponse.results
+        );
+        return acc;
+      }, [])
+    : new SearchResults(
+        new SearchParameters(results.state),
+        results._originalResponse.results
+      );
 };
 
 const createInstantSearch = function(defaultAlgoliaClient, root) {
@@ -67,6 +108,7 @@ const createInstantSearch = function(defaultAlgoliaClient, root) {
       searchParameters: PropTypes.object,
       createURL: PropTypes.func,
       searchState: PropTypes.object,
+      resultsState: PropTypes.object,
       onSearchStateChange: PropTypes.func,
     };
 
@@ -75,7 +117,7 @@ const createInstantSearch = function(defaultAlgoliaClient, root) {
       this.client =
         props.algoliaClient || defaultAlgoliaClient(props.appId, props.apiKey);
       this.client.addAlgoliaAgent(`react-instantsearch ${version}`);
-      client2 = this.client;
+      client = this.client;
       indexName = props.indexName;
     }
 
@@ -90,11 +132,12 @@ const createInstantSearch = function(defaultAlgoliaClient, root) {
         this.client = defaultAlgoliaClient(nextProps.appId, nextProps.apiKey);
       }
       this.client.addAlgoliaAgent(`react-instantsearch ${version}`);
-      client2 = this.client;
-      indexName = nextProps.indexName;
+      client = this.client;
+      indexName = props.indexName;
     }
 
     render() {
+      const resultsState = decorateResults(this.props.resultsState);
       return (
         <InstantSearch
           createURL={this.props.createURL}
@@ -106,7 +149,7 @@ const createInstantSearch = function(defaultAlgoliaClient, root) {
           root={root}
           algoliaClient={this.client}
           children={this.props.children}
-          resultsState={this.props.resultsState}
+          resultsState={resultsState}
         />
       );
     }

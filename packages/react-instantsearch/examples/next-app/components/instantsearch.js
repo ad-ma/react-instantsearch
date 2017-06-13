@@ -1,5 +1,11 @@
 import React from 'react';
-import { RefinementList, SearchBox, Hits } from 'react-instantsearch/dom';
+import {
+  RefinementList,
+  SearchBox,
+  Hits,
+  Configure,
+  Index,
+} from 'react-instantsearch/dom';
 import { InstantSearch } from 'react-instantsearch/server';
 export default class extends React.Component {
   render() {
@@ -12,9 +18,19 @@ export default class extends React.Component {
         onSearchStateChange={this.props.onSearchStateChange}
         searchState={this.props.searchState}
       >
-        <SearchBox />
-        <Hits />
-        <RefinementList attributeName="category" />
+        <Configure hitsPerPage={3} />
+        <Index indexName="ikea">
+          <SearchBox defaultRefinement="battery" />
+          <Hits />
+        </Index>
+        <Index indexName="bestbuy">
+          <SearchBox defaultRefinement="desk" />
+          <Hits />
+        </Index>
+        <Index indexName="airbnb">
+          <SearchBox defaultRefinement="italy" />
+          <Hits />
+        </Index>
       </InstantSearch>
     );
   }

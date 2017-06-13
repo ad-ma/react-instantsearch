@@ -67,9 +67,11 @@ export default function createConnector(connectorDesc) {
       };
 
       this.unsubscribe = store.subscribe(() => {
-        this.setState({
-          props: this.getProvidedProps(this.props),
-        });
+        if (window) {
+          this.setState({
+            props: this.getProvidedProps(this.props),
+          });
+        }
       });
 
       const getSearchParameters = hasSearchParameters
