@@ -8,7 +8,7 @@ import algoliasearchHelper, {
 } from 'algoliasearch-helper';
 import ReactDom from 'react-dom/server';
 import { getIndex, hasMultipleIndex } from './indexUtils';
-
+import { isEmpty } from 'lodash';
 /**
  * Creates a specialized root InstantSearch component. It accepts
  * an algolia client and a specification of the root Element.
@@ -66,13 +66,21 @@ const findResults = function(App, params) {
       return acc;
     }, {});
 
-  const search = Object.keys(mergedSearchParameters).map(key => {
-    const helper = algoliasearchHelper(
-      client,
-      mergedSearchParameters[key].index
-    );
-    return helper.searchOnce(new SearchParameters(mergedSearchParameters[key]));
-  });
+  let search;
+
+  if (isEmpty(mergedSearchParameters)) {
+    const helper = algoliasearchHelper(client, sharedSearchParameters.index);
+    return helper.searchOnce(sharedSearchParameters);
+  } else {
+    search = Object.keys(mergedSearchParameters).map(key => {
+      const helper = algoliasearchHelper(
+        client,
+        mergedSearchParameters[key].index
+      );
+      return helper.searchOnce(mergedSearchParameters[key]);
+    });
+  }
+
   return Promise.all(search);
 };
 

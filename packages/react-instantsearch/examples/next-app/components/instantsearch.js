@@ -19,18 +19,9 @@ export default class extends React.Component {
         searchState={this.props.searchState}
       >
         <Configure hitsPerPage={3} />
-        <Index indexName="ikea">
-          <SearchBox defaultRefinement="battery" />
-          <Hits />
-        </Index>
-        <Index indexName="bestbuy">
-          <SearchBox defaultRefinement="desk" />
-          <Hits />
-        </Index>
-        <Index indexName="airbnb">
-          <SearchBox defaultRefinement="italy" />
-          <Hits />
-        </Index>
+        <SearchBox defaultRefinement="battery" />
+        <Hits />
+        <RefinementList attributeName="category" />
       </InstantSearch>
     );
   }
